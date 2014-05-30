@@ -9,7 +9,7 @@ class MoviesController < ApplicationController
   def index
     if params[:order] 
 	@movies = Movie.all( order: "#{params[:order]} ASC")
-        @hilite = params[:order] 
+        @hilite = true
     else
     	@movies = Movie.all
     end
