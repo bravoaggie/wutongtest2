@@ -7,14 +7,31 @@ class MoviesController < ApplicationController
   end
 
   def index
+
     if params[:order].is_a?(String) 
 	      @movies = Movie.all( order: "#{params[:order]} ASC")
         @hilite = params[:order] 
+        session[:order] = @hilite
+    elsif params[:ratings]
+        @movies = Movie.where(rating: params[:ratings].keys)
+        session[:ratings] = params[:ratings].keys
     elsif params[:order].is_a?(Hash) 
-        @movies = Movie.where(rating: params[:ratings]).order("#{params[:order].keys.first} ASC")
+        @movies = Movie.where(rating: params[:ratings].keys).(order: "#{params[:order].keys.first} ASC")
     	  @hilite = params[:order].keys.first
+        session[:order] = @hilite
+        session[:ratings] = params[:ratings].keys
     else
-        @movies = Movie.all
+        if session[:order] and session[:ratings]
+          @movies = Movie.where(rating: session[:ratings]).order("#{session[:order]} ASC") 
+          @hilite = session[:order]
+        elsif session[:ratings]
+          @movies = Movie.where(rating: session[:ratings])
+        elsif session[:order]
+          @movies = Movie.all(order: "#{session[:order]} ASC") 
+          @hilite = session[:order]
+        else
+          @movies = Movie.all
+        end 
     end
     @all_ratings = Movie.ratings
   end
