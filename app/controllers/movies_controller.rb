@@ -7,21 +7,27 @@ class MoviesController < ApplicationController
   end
 
   def index
- 
-    if params[:order].is_a?(String)
-       @hilite = params[:order] 
-       session[:order] = @hilite
-    elsif params[:order].is_a?(Hash)
-    	  @hilite = params[:order].keys.first
-        session[:order] = @hilite
-    end
-    if params[:ratings]
-       session[:ratings] = params[:ratings] 
+    unless session[:redirect]
+      if params[:order].is_a?(String)
+         @hilite = params[:order] 
+         session[:order] = @hilite
+         session[:redirect] = true
+      elsif params[:order].is_a?(Hash)
+      	 @hilite = params[:order].keys.first
+         session[:order] = @hilite
+         session[:redirect] = true
+      end
+      if params[:ratings]
+         session[:ratings] = params[:ratings]
+         session[:redirect] = true 
+      end
+    else
+      session[:redirect] = false
     end     
+    @all_ratings = Movie.ratings
     if session[:order] and session[:ratings]
       @movies = Movie.where(rating: session[:ratings].keys).order("#{session[:order]} ASC") 
       @hilite = session[:order] 
-      redirect_to :action => :index, :order => session[:order]
     elsif session[:ratings]
       @movies = Movie.where(rating: session[:ratings].keys)
     elsif session[:order]
@@ -29,9 +35,11 @@ class MoviesController < ApplicationController
       @hilite = session[:order]
     else
       @movies = Movie.all
-    end 
-    @all_ratings = Movie.ratings
-
+    end
+    if session[:redirect]
+       redirect_to movies_path(:order => session[:order], :ratings => session[:ratings])
+       return
+    end        
   end
 
   def new
