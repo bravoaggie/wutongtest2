@@ -7,14 +7,14 @@
     = hidden_field :order, "#{@hilite}"
   - @all_ratings.each do |rating|
     = rating
-    = check_box_tag "ratings[#{rating}]", 1, session[:ratings].nil? or session[:ratings].include? rating
+    = check_box_tag "ratings[#{rating}]", 1, (session[:ratings].nil? or session[:ratings].include? rating)
   = submit_tag('Refresh', :id => "ratings_submit")
 
 %table#movies
   %thead
     %tr
       - if @hilite == "title"
-        %th.hilite#title_header= link_to "Movie Title", movies_path(order: "title")
+        %th.hilite= link_to "Movie Title", movies_path(order: "title"), :id => "title_header"
       - else
         %th#title_header= link_to "Movie Title", movies_path(order: "title")
       %th Rating
