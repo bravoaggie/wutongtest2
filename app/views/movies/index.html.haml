@@ -7,7 +7,7 @@
     = hidden_field :order, "#{@hilite}"
   - @all_ratings.each do |rating|
     = rating
-    = check_box_tag "ratings[#{rating}]"
+    = check_box_tag "ratings[#{rating}]", 1, (session[:ratings].nil? or session[:ratings].include? rating)
   = submit_tag('Refresh', :id => "ratings_submit")
 
 %table#movies
