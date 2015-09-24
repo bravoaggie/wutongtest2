@@ -1,5 +1,5 @@
 class Movie < ActiveRecord::Base
-  RATINGS = ['G','PG','PG-13','R']
+  RATINGS = ['PG','PG-13','R','G']
   attr_accessible :title, :rating, :description, :release_date
 
   def self.ratings

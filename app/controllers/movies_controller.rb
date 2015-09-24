@@ -5,16 +5,16 @@ class MoviesController < ApplicationController
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
-
+  def movie_params
+    params.require(:movie).permit(:title, :rating, :description, :release_date)
+  end
   def index
     unless session[:redirect]
       if params[:order].is_a?(String)
-         @hilite = params[:order] 
-         session[:order] = @hilite
+         session[:order] = params[:order]
          session[:redirect] = true
       elsif params[:order].is_a?(Hash)
-      	 @hilite = params[:order].keys.first
-         session[:order] = @hilite
+         session[:order] = params[:order].keys.first
          session[:redirect] = true
       end
       if params[:ratings]
@@ -27,12 +27,14 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.ratings
     if session[:order] and session[:ratings]
       @movies = Movie.where(rating: session[:ratings].keys).order("#{session[:order]} ASC") 
-      @hilite = session[:order] 
+      @hilite = session[:order]
     elsif session[:ratings]
       @movies = Movie.where(rating: session[:ratings].keys)
     elsif session[:order]
-      @movies = Movie.all(order: "#{session[:order]} ASC") 
+      @movies = Movie.all(order: "#{session[:order]} ASC")
       @hilite = session[:order]
+      
+      
     else
       @movies = Movie.all
     end
@@ -48,7 +50,7 @@ class MoviesController < ApplicationController
 
   def create
     @movie = Movie.create!(params[:movie])
-    flash[:notice] = "#{@movie.title} was successfully created."
+    flash[:notice] = "Movie was successfully created."
     redirect_to movies_path
   end
 
@@ -59,14 +61,14 @@ class MoviesController < ApplicationController
   def update
     @movie = Movie.find params[:id]
     @movie.update_attributes!(params[:movie])
-    flash[:notice] = "#{@movie.title} was successfully updated."
-    redirect_to movie_path(@movie)
+    flash[:notice] = "movie-title was successfully updated."
+    redirect_to movie_path
   end
 
   def destroy
     @movie = Movie.find(params[:id])
     @movie.destroy
-    flash[:notice] = "Movie '#{@movie.title}' deleted."
+    flash[:notice] = "movie title deleted."
     redirect_to movies_path
   end
 
